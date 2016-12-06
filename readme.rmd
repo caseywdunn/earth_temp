@@ -1,0 +1,37 @@
+---
+title: "Earth Temperature"
+output: github_document
+
+---
+
+
+```{r}
+library(tidyverse)
+library(ggvis)
+
+# From https://github.com/tidyverse/forcats
+month_levels <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+
+D_raw = read_table("mixedGLB.Ts.ERSSTV4.GHCN.CL.PA.txt", skip=7)
+problems(D_raw)
+
+D_raw %>% 
+  gather(2:13, key="Month", value="Temp") %>% 
+  select(Year, Month, Temp) %>% 
+  mutate(Month=parse_factor(Month, month_levels)) %>%
+  mutate(Temp=parse_number(Temp)) %>%
+  arrange(Year, Month) -> 
+  D
+
+D
+```
+
+
+```{r}
+ggplot(data=D, mapping = aes(x=Month, y=Temp, group=Year)) + geom_line()
+
+```
+
